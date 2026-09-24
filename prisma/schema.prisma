@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ADMIN
+  KEPALA_KANTOR
+  TU
+  INTELDAKIM
+  VERDOKJAL
+  USER
+
+  @@map("role_enum")
+}
+
+enum StatusAgenda {
+  DRAFT
+  PUBLISH
+  CANCELLED
+
+  @@map("status_agenda_enum")
+}
+
+enum ActivityAction {
+  LOGIN
+  CREATE
+  UPDATE
+  DELETE
+  PASSWORD_RESET
+
+  @@map("activity_action_enum")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  username  String   @unique
+  password  String // bcrypt hash
+  jabatan   String?
+  role      Role     @default(USER)
+  email     String?  @unique
+  phone     String?
+  avatarUrl String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dokumens   Dokumen[]
+  folders    Folder[]
+  agendas    Agenda[]      @relation("PembuatAgenda")
+  activities ActivityLog[]
+
+  @@index([role])
+  @@index([username])
+  @@map("users")
+}
+
+model Dokumen {
+  id            String   @id @default(cuid())
+  userId        String
+  folderId      String?
+  judul         String
+  deskripsi     String?
+  fileUrl       String
+  filePath      String // storage key
+  fileSize      Int // bytes
+  mimeType      String
+  tanggalDokumen DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folder Folder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([folderId])
+  @@index([tanggalDokumen])
+  @@map("dokumens")
+}
+
+model Folder {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  color     Int      @default(1) // 1-8
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dokumens Dokumen[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("folders")
+}
+
+model JenisUsaha {
+  id         String   @id @default(cuid())
+  namaJenis  String   @unique
+  deskripsi  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("jenis_usahas")
+}
+
+model Agenda {
+  id             String       @id @default(cuid())
+  userId         String?
+  judul          String
+  tempatKegiatan String
+  tglKegiatan    DateTime
+  jamMulai       String
+  jamSelesai     String?
+  deskripsi      String?
+  status         StatusAgenda @default(DRAFT)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  user User? @relation("PembuatAgenda", fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([tglKegiatan])
+  @@index([status])
+  @@map("agendas")
+}
+
+model ActivityLog {
+  id        String         @id @default(cuid())
+  userId    String?
+  action    ActivityAction // CREATE, UPDATE, DELETE, LOGIN, etc
+  entity    String // "Dokumen", "JenisUsaha", "Akun", ...
+  entityId  String?
+  metadata  Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime       @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([entity, entityId])
+  @@index([createdAt])
+  @@map("activity_logs")
+}
