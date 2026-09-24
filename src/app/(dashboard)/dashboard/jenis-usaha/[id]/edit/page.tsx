@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/page-header";
 import { JenisUsahaForm } from "@/components/jenis-usaha/jenis-form";
 
 export const metadata: Metadata = {
-  title: "Edit Jenis Usaha",
+  title: "Edit Jenis Dokumen | BOSS",
 };
 
 export default async function EditJenisUsahaPage({
@@ -21,7 +21,7 @@ export default async function EditJenisUsahaPage({
 
   return (
     <div className="space-y-4">
-      <PageHeader title="Edit Jenis Usaha" description="Perbarui data jenis usaha." />
+      <PageHeader title="Edit Jenis Dokumen" description="Perbarui data jenis dokumen." />
       <JenisUsahaForm
         mode="edit"
         id={row.id}

@@ -24,8 +24,8 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
   ),
   icons: {
-    icon: [{ url: "/rapp.png", type: "image/png" }],
-    apple: [{ url: "/rapp.png", type: "image/png" }],
+    icon: [{ url: "/LogoBOSS.png", type: "image/png" }],
+    apple: [{ url: "/LogoBOSS.png", type: "image/png" }],
   },
   openGraph: {
     title: "BOSS — Bantaeng Office Smart System",

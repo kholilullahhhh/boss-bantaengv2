@@ -23,7 +23,7 @@ const ALL_ROLES = ["ADMIN", "KEPALA_KANTOR", "TU", "INTELDAKIM", "VERDOKJAL", "U
 export const NAV_ITEMS: NavItem[] = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ALL_ROLES },
   { title: "Dokumen", href: "/dashboard/dokumen", icon: LibraryBig, roles: DOCUMENT_ROLES },
-  { title: "Jenis Usaha", href: "/dashboard/jenis-usaha", icon: FolderPlus, roles: ["ADMIN"] },
+  { title: "Jenis Dokumen", href: "/dashboard/jenis-usaha", icon: FolderPlus, roles: ["ADMIN"] },
   { title: "Akun", href: "/dashboard/akun", icon: Users, roles: ["ADMIN"] },
   { title: "Log Aktivitas", href: "/dashboard/activity", icon: Activity, roles: ["ADMIN"] },
   { title: "Profil", href: "/dashboard/profile", icon: UserRound, roles: ALL_ROLES },

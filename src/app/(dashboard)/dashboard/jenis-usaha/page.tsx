@@ -11,7 +11,7 @@ import { SearchFilter } from "@/components/forms/search-filter";
 import { JenisUsahaTable } from "@/components/jenis-usaha/jenis-table";
 
 export const metadata: Metadata = {
-  title: "Jenis Usaha",
+  title: "Jenis Dokumen",
 };
 
 export default async function JenisUsahaPage({
@@ -38,7 +38,7 @@ export default async function JenisUsahaPage({
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Jenis Usaha"
+        title="Jenis Dokumen"
         description="Kelola daftar jenis dokumen/usaha kantor."
         actions={
           <Button asChild>

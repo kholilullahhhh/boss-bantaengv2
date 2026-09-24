@@ -89,10 +89,7 @@ const FEATURES = [
 ];
 
 export default async function LandingPage() {
-  const [stats, agendas] = await Promise.all([
-    getPublicStats(),
-    getPublishedAgendas(3),
-  ]);
+  const [stats, agendas] = await Promise.all([getPublicStats(), getPublishedAgendas(3)]);
 
   const formatDate = (value: string) =>
     new Date(value).toLocaleDateString("id-ID", {
@@ -123,151 +120,120 @@ export default async function LandingPage() {
   return (
     <div>
       {/* Hero — background foto kantor */}
-      <section className="relative overflow-hidden">
+      <section className="relative flex min-h-[calc(100dvh-65px)] flex-col overflow-hidden">
+        {/* Background */}
         <div className="absolute inset-0">
           <Image
             src="/rat.jpeg"
             alt="Kantor Imigrasi Kelas III Non TPI Bantaeng"
             fill
             priority
-            quality={85}
+            quality={90}
             className="object-cover object-center"
             sizes="100vw"
           />
+
+          {/* Overlay kiri */}
           <div
             aria-hidden="true"
             className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/75 to-slate-900/40"
           />
+
+          {/* Overlay bawah */}
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/30"
+            className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-slate-950/20"
           />
         </div>
 
-        <div className="relative mx-auto grid w-full max-w-6xl gap-10 px-4 py-16 lg:grid-cols-2 lg:items-center lg:px-6 lg:py-24">
-          <div className="space-y-6 text-white">
-            <div className="flex flex-wrap items-center gap-3">
-              <Badge
-                variant="secondary"
-                className="border-white/20 bg-white/15 text-white backdrop-blur"
-              >
-                Kantor Imigrasi Kelas III Non TPI Bantaeng
-              </Badge>
-              <span className="flex items-center gap-1.5 text-xs font-medium text-white/80">
-                <Sparkles className="size-3.5" aria-hidden="true" />
-                Sistem digital terintegrasi
-              </span>
-            </div>
+        {/* Main Hero Content */}
+        <div className="relative flex flex-1 items-center">
+          <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:gap-10 sm:py-12 lg:grid-cols-2 lg:items-center lg:px-6 lg:py-14">
+            {/* Left Content */}
+            <div className="space-y-5 text-white">
+              <div className="flex flex-wrap items-center gap-3">
+                <Badge
+                  variant="secondary"
+                  className="border-white/20 bg-white/15 text-white backdrop-blur-md"
+                >
+                  Kantor Imigrasi Kelas III Non TPI Bantaeng
+                </Badge>
 
-            <div className="flex flex-wrap items-center gap-4">
-              <Image
-                src="/LogoBOSS.png"
-                alt="Logo BOSS — Bantaeng Office Smart Service"
-                width={420}
-                height={168}
-                priority
-                sizes="(max-width: 640px) 280px, 420px"
-                className="h-auto w-[min(100%,20rem)] drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
-              />
-              <div className="flex items-center gap-2">
-                <span className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/30 bg-white shadow-lg">
-                  <Image
-                    src="/logoimig.png"
-                    alt="Logo Imigrasi"
-                    width={48}
-                    height={48}
-                    className="size-11 object-contain p-0.5"
-                    priority
-                  />
+                <span className="flex items-center gap-1.5 text-xs font-medium text-white/80">
+                  <Sparkles className="size-3.5" aria-hidden="true" />
+                  Sistem digital terintegrasi
                 </span>
-                <span className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/30 bg-white shadow-lg">
-                  <Image
-                    src="/LogoO.png"
-                    alt="Kementerian Imigrasi dan Pemasyarakatan RI"
-                    width={48}
-                    height={48}
-                    className="size-11 object-contain p-0.5"
-                    priority
-                  />
-                </span>
-                <span className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/30 bg-white shadow-lg">
-                  <Image
-                    src="/rapp.png"
-                    alt="Lambang Daerah Bantaeng"
-                    width={48}
-                    height={48}
-                    className="size-11 object-contain"
-                    priority
-                  />
-                </span>
+              </div>
+
+              <h1 className="max-w-3xl text-4xl font-bold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-[3.5rem] xl:text-6xl">
+                BOSS — Bantaeng Office Smart System
+              </h1>
+
+              <p className="max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
+                Sistem informasi kantor modern untuk pengelolaan dokumen, agenda, dan
+                layanan internal yang cepat, aman, dan terintegrasi di Kantor Imigrasi
+                Bantaeng.
+              </p>
+
+              <div className="flex flex-wrap gap-3 pt-1">
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-white text-slate-900 shadow-lg shadow-black/10 hover:bg-white/90"
+                >
+                  <Link href="/login">
+                    Masuk ke Dashboard
+                    <ArrowRight className="ml-1" aria-hidden="true" />
+                  </Link>
+                </Button>
+
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="border-white/30 bg-white/10 text-white backdrop-blur-md hover:bg-white/20 hover:text-white"
+                >
+                  <Link href="/agenda">Lihat Agenda</Link>
+                </Button>
               </div>
             </div>
 
-            <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
-              BOSS — Bantaeng Office Smart System
-            </h1>
-            <p className="max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
-              Sistem informasi kantor modern untuk pengelolaan dokumen, agenda,
-              dan layanan internal yang cepat, aman, dan terintegrasi di Kantor
-              Imigrasi Bantaeng.
-            </p>
+            {/* Statistics */}
+            <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+              {heroStats.map((item) => (
+                <Card
+                  key={item.label}
+                  className="border-white/20 bg-white/10 text-white shadow-xl shadow-black/10 backdrop-blur-xl supports-[backdrop-filter]:bg-white/10"
+                >
+                  <CardHeader className="space-y-1 pb-2">
+                    <CardDescription className="flex items-center gap-1.5 text-xs text-white/80">
+                      <item.icon className="size-3.5" aria-hidden="true" />
+                      {item.label}
+                    </CardDescription>
+                  </CardHeader>
 
-            <div className="flex flex-wrap gap-3">
-              <Button
-                asChild
-                size="lg"
-                className="bg-white text-slate-900 hover:bg-white/90"
-              >
-                <Link href="/login">
-                  Masuk ke Dashboard
-                  <ArrowRight aria-hidden="true" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="border-white/30 bg-white/10 text-white backdrop-blur hover:bg-white/20 hover:text-white"
-              >
-                <Link href="/agenda">Lihat Agenda</Link>
-              </Button>
+                  <CardContent>
+                    <p className="text-3xl font-bold tracking-tight">{item.value}</p>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-          </div>
-
-          {/* Kartu statistik glass */}
-          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
-            {heroStats.map((item) => (
-              <Card
-                key={item.label}
-                className="border-white/20 bg-white/10 text-white backdrop-blur-md supports-[backdrop-filter]:bg-white/10"
-              >
-                <CardHeader className="space-y-1 pb-2">
-                  <CardDescription className="flex items-center gap-1.5 text-xs text-white/80">
-                    <item.icon className="size-3.5" aria-hidden="true" />
-                    {item.label}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-3xl font-bold tracking-tight">
-                    {item.value}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
           </div>
         </div>
 
-        {/* Strip bawah hero */}
-        <div className="relative border-t border-white/10 bg-slate-950/50 backdrop-blur-sm">
-          <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 text-sm text-white/80 lg:px-6">
+        {/* Bottom Information Bar */}
+        <div className="relative shrink-0 border-t border-white/10 bg-slate-950/65 backdrop-blur-md">
+          <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm text-white/80 lg:px-6">
             <span className="flex items-center gap-2">
               <MapPin className="size-4 shrink-0" aria-hidden="true" />
               Jl. Bersama, Kabupaten Bantaeng, Sulawesi Selatan
             </span>
+
             <span className="flex items-center gap-2">
               <Phone className="size-4 shrink-0" aria-hidden="true" />
               Layanan informasi kantor
             </span>
+
             <span className="flex items-center gap-2">
               <Mail className="size-4 shrink-0" aria-hidden="true" />
               imigrasi-bantaeng.go.id
@@ -321,10 +287,10 @@ export default async function LandingPage() {
               Butta Toa Bantaeng siap melayani perjalanan Anda
             </h2>
             <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-              Kantor Imigrasi Kelas III Non TPI Bantaeng hadir dekat dengan
-              masyarakat. Lewat BOSS, seluruh arsip kegiatan, agenda, dan
-              layanan internal dikelola dalam satu sistem digital yang rapi,
-              aman, dan mudah diakses oleh pegawai berwenang.
+              Kantor Imigrasi Kelas III Non TPI Bantaeng hadir dekat dengan masyarakat.
+              Lewat BOSS, seluruh arsip kegiatan, agenda, dan layanan internal dikelola
+              dalam satu sistem digital yang rapi, aman, dan mudah diakses oleh pegawai
+              berwenang.
             </p>
             <ul className="space-y-2.5">
               {[
@@ -371,8 +337,8 @@ export default async function LandingPage() {
               Kemampuan utama BOSS
             </h2>
             <p className="text-sm text-muted-foreground">
-              Dirancang untuk mendukung operasional kantor Imigrasi Bantaeng
-              secara modern dan transparan.
+              Dirancang untuk mendukung operasional kantor Imigrasi Bantaeng secara modern
+              dan transparan.
             </p>
           </div>
 
@@ -421,9 +387,8 @@ export default async function LandingPage() {
               Bukan sekadar penyimpan file
             </h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Setiap modul dibangun dengan validasi ketat, otorisasi berbasis
-              role, dan pengalaman UI yang nyaman — dari dashboard sampai
-              halaman publik.
+              Setiap modul dibangun dengan validasi ketat, otorisasi berbasis role, dan
+              pengalaman UI yang nyaman — dari dashboard sampai halaman publik.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -450,12 +415,8 @@ export default async function LandingPage() {
         <div className="mx-auto w-full max-w-6xl px-4 py-16 lg:px-6">
           <div className="mb-6 flex items-center justify-between gap-4">
             <div className="space-y-1">
-              <h2 className="text-2xl font-semibold tracking-tight">
-                Agenda Terbaru
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Kegiatan yang akan datang.
-              </p>
+              <h2 className="text-2xl font-semibold tracking-tight">Agenda Terbaru</h2>
+              <p className="text-sm text-muted-foreground">Kegiatan yang akan datang.</p>
             </div>
             <Button asChild variant="outline" size="sm">
               <Link href="/agenda">Semua Agenda</Link>
@@ -463,9 +424,7 @@ export default async function LandingPage() {
           </div>
 
           {agendas.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Belum ada agenda terbit.
-            </p>
+            <p className="text-sm text-muted-foreground">Belum ada agenda terbit.</p>
           ) : (
             <div className="grid gap-4 md:grid-cols-3">
               {agendas.map((agenda) => (
@@ -483,10 +442,7 @@ export default async function LandingPage() {
                       {agenda.jamSelesai ? `–${agenda.jamSelesai}` : ""}
                     </CardDescription>
                     <CardTitle>
-                      <Link
-                        href={`/agenda/${agenda.id}`}
-                        className="hover:underline"
-                      >
+                      <Link href={`/agenda/${agenda.id}`} className="hover:underline">
                         {agenda.judul}
                       </Link>
                     </CardTitle>
@@ -525,8 +481,8 @@ export default async function LandingPage() {
               Butuh bantuan layanan?
             </h2>
             <p className="text-sm leading-relaxed text-primary-foreground/90 sm:text-base">
-              Hubungi kami untuk informasi layanan Kantor Imigrasi Kelas III Non
-              TPI Bantaeng — kami siap membantu pegawai dan masyarakat.
+              Hubungi kami untuk informasi layanan Kantor Imigrasi Kelas III Non TPI
+              Bantaeng — kami siap membantu pegawai dan masyarakat.
             </p>
             <div className="flex flex-wrap gap-3">
               <Button
