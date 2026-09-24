@@ -30,7 +30,7 @@ export function SiteFooter() {
           <div className="flex items-center gap-3">
             <span className="relative flex size-10 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-white p-1">
               <Image
-                src="/logoimig.png"
+                src="/rapp.png"
                 alt="Logo Imigrasi"
                 width={36}
                 height={36}
@@ -39,7 +39,7 @@ export function SiteFooter() {
             </span>
             <span className="relative flex size-10 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-white p-1">
               <Image
-                src="/rapp.png"
+                src="/logoimig.png"
                 alt="Kementerian Imigrasi dan Pemasyarakatan RI"
                 width={36}
                 height={36}

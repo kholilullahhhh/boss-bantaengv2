@@ -119,8 +119,8 @@ export default async function LandingPage() {
 
   return (
     <div>
-      {/* Hero — background foto kantor */}
-      <section className="relative flex min-h-[calc(100dvh-65px)] flex-col overflow-hidden">
+      {/* Hero — background foto kantor (menyatu dengan navbar transparan) */}
+      <section className="relative flex min-h-dvh flex-col overflow-hidden">
         {/* Background */}
         <div className="absolute inset-0">
           <Image
@@ -139,15 +139,15 @@ export default async function LandingPage() {
             className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/75 to-slate-900/40"
           />
 
-          {/* Overlay bawah */}
+          {/* Overlay bawah + atas (sinkron dgn navbar) */}
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-slate-950/20"
+            className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/20 to-slate-950/90"
           />
         </div>
 
-        {/* Main Hero Content */}
-        <div className="relative flex flex-1 items-center">
+        {/* Main Hero Content — di bawah navbar fixed */}
+        <div className="relative flex flex-1 items-center pt-[72px]">
           <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:gap-10 sm:py-12 lg:grid-cols-2 lg:items-center lg:px-6 lg:py-14">
             {/* Left Content */}
             <div className="space-y-5 text-white">

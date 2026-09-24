@@ -1,39 +1,38 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 interface HeaderScrollProps {
   children: React.ReactNode;
 }
 
 export function HeaderScroll({ children }: HeaderScrollProps) {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const isLanding = pathname === "/";
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 24);
     };
 
     handleScroll();
-
-    window.addEventListener("scroll", handleScroll, {
-      passive: true,
-    });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const className = [
+    "fixed inset-x-0 top-0 z-50 w-full transition-all duration-300",
+    !isLanding
+      ? "border-b border-white/10 bg-[#07172D]/95 shadow-none backdrop-blur-md"
+      : scrolled
+        ? "border-b border-white/10 bg-slate-950/40 shadow-[0_8px_32px_rgba(0,0,0,0.18)] backdrop-blur-xl"
+        : "border-b border-transparent bg-transparent shadow-none backdrop-blur-0",
+  ].join(" ");
+
   return (
-    <header
-      className={[
-        "sticky top-0 z-50 w-full border-b transition-all duration-300",
-        scrolled
-          ? "border-white/10 bg-[#07172D]/75 shadow-lg shadow-black/20 backdrop-blur-xl"
-          : "border-white/10 bg-[#07172D]/95 backdrop-blur-md",
-      ].join(" ")}
-    >
+    <header className={className}>
       {children}
     </header>
   );
