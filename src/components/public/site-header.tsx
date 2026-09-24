@@ -18,8 +18,8 @@ export async function SiteHeader() {
         <Link href="/" className="flex items-center gap-2.5">
           <span className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-white shadow-sm">
             <Image
-              src="/logoimig.png"
-              alt="Logo Imigrasi"
+              src="/rapp.png"
+              alt="Logo BOSS"
               width={40}
               height={40}
               className="size-9 object-contain"

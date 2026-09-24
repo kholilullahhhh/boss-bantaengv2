@@ -20,6 +20,21 @@ export const metadata: Metadata = {
   },
   description:
     "Sistem informasi digital Kantor Imigrasi Kelas III Non TPI Bantaeng.",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
+  ),
+  icons: {
+    icon: [{ url: "/rapp.png", type: "image/png" }],
+    apple: [{ url: "/rapp.png", type: "image/png" }],
+  },
+  openGraph: {
+    title: "BOSS — Bantaeng Office Smart System",
+    description:
+      "Sistem informasi digital Kantor Imigrasi Kelas III Non TPI Bantaeng.",
+    images: ["/LogoBOSS.png"],
+    locale: "id_ID",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

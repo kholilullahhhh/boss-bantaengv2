@@ -9,8 +9,8 @@ export function SiteFooter() {
           <div className="flex items-center gap-3">
             <span className="relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-white shadow-sm">
               <Image
-                src="/logoimig.png"
-                alt="Logo Imigrasi"
+                src="/LogoBOSS.png"
+                alt="Logo BOSS"
                 width={44}
                 height={44}
                 className="size-10 object-contain"
@@ -30,8 +30,8 @@ export function SiteFooter() {
           <div className="flex items-center gap-3">
             <span className="relative flex size-10 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-white p-1">
               <Image
-                src="/LogoO.png"
-                alt="Kementerian Imigrasi dan Pemasyarakatan RI"
+                src="/logoimig.png"
+                alt="Logo Imigrasi"
                 width={36}
                 height={36}
                 className="size-8 object-contain"
@@ -39,8 +39,8 @@ export function SiteFooter() {
             </span>
             <span className="relative flex size-10 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-white p-1">
               <Image
-                src="/rapp.png"
-                alt="Lambang Bantaeng"
+                src="/LogoO.png"
+                alt="Kementerian Imigrasi dan Pemasyarakatan RI"
                 width={36}
                 height={36}
                 className="size-8 object-contain"

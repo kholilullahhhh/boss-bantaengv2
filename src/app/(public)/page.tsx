@@ -159,37 +159,48 @@ export default async function LandingPage() {
               </span>
             </div>
 
-            <div className="flex items-center gap-4">
-              <span className="relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/30 bg-white shadow-lg">
-                <Image
-                  src="/logoimig.png"
-                  alt="Logo Imigrasi"
-                  width={56}
-                  height={56}
-                  className="size-13 object-contain p-1"
-                  priority
-                />
-              </span>
-              <span className="relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/30 bg-white shadow-lg">
-                <Image
-                  src="/LogoO.png"
-                  alt="Kementerian Imigrasi dan Pemasyarakatan RI"
-                  width={56}
-                  height={56}
-                  className="size-13 object-contain p-1"
-                  priority
-                />
-              </span>
-              <span className="relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/30 bg-white shadow-lg">
-                <Image
-                  src="/rapp.png"
-                  alt="Lambang Daerah Bantaeng"
-                  width={56}
-                  height={56}
-                  className="size-13 object-contain"
-                  priority
-                />
-              </span>
+            <div className="flex flex-wrap items-center gap-4">
+              <Image
+                src="/LogoBOSS.png"
+                alt="Logo BOSS — Bantaeng Office Smart Service"
+                width={420}
+                height={168}
+                priority
+                sizes="(max-width: 640px) 280px, 420px"
+                className="h-auto w-[min(100%,20rem)] drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
+              />
+              <div className="flex items-center gap-2">
+                <span className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/30 bg-white shadow-lg">
+                  <Image
+                    src="/logoimig.png"
+                    alt="Logo Imigrasi"
+                    width={48}
+                    height={48}
+                    className="size-11 object-contain p-0.5"
+                    priority
+                  />
+                </span>
+                <span className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/30 bg-white shadow-lg">
+                  <Image
+                    src="/LogoO.png"
+                    alt="Kementerian Imigrasi dan Pemasyarakatan RI"
+                    width={48}
+                    height={48}
+                    className="size-11 object-contain p-0.5"
+                    priority
+                  />
+                </span>
+                <span className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/30 bg-white shadow-lg">
+                  <Image
+                    src="/rapp.png"
+                    alt="Lambang Daerah Bantaeng"
+                    width={48}
+                    height={48}
+                    className="size-11 object-contain"
+                    priority
+                  />
+                </span>
+              </div>
             </div>
 
             <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">

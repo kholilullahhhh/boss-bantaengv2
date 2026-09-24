@@ -21,8 +21,8 @@ export function SidebarContent({ items, onNavigate }: SidebarContentProps) {
       <div className="flex items-center gap-3 px-2">
         <span className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-white shadow-sm">
           <Image
-            src="/logoimig.png"
-            alt="Logo Imigrasi"
+            src="/rapp.png"
+            alt="Logo BOSS"
             width={40}
             height={40}
             className="size-9 object-contain"

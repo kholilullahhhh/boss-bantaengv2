@@ -11,8 +11,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="flex flex-col items-center gap-2 text-center">
           <span className="relative flex size-16 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-white shadow-md">
             <Image
-              src="/logoimig.png"
-              alt="Logo Imigrasi"
+              src="/rapp.png"
+              alt="Logo BOSS"
               width={64}
               height={64}
               className="size-14 object-contain"
