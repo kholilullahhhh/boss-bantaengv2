@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Fragment } from "react";
 import { ChevronRight } from "lucide-react";
 import { navTitleForPath } from "@/components/layout/nav";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { UserMenu } from "@/components/layout/user-menu";
 import type { SessionUser } from "@/server/queries/session";
 
@@ -29,7 +30,10 @@ export function Header({ user }: HeaderProps) {
           </Fragment>
         )}
       </nav>
-      <UserMenu user={user} />
+      <div className="flex items-center gap-1">
+        <ThemeToggle />
+        <UserMenu user={user} />
+      </div>
     </header>
   );
 }

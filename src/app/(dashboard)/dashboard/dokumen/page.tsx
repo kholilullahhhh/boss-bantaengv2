@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { requireRouteAccess } from "@/server/queries/session";
 import { getDokumenList, getFolderSidebar } from "@/server/queries/dokumen";
-import { dokumenFilterSchema } from "@/lib/validations";
+import { dokumenFilterSchema, paginationSchema } from "@/lib/validations";
 import { resolveFileViewUrl } from "@/lib/storage";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
@@ -29,8 +29,16 @@ export default async function DokumenPage({
     if (typeof value === "string") flat[key] = value;
   }
 
-  const parsed = dokumenFilterSchema.safeParse(flat);
-  const filter = parsed.success ? parsed.data : dokumenFilterSchema.parse({});
+  // Pisahkan paging: `?page=-1` / `?page=abc` tidak boleh menghapus filter lain (S3).
+  const { page: rawPage, pageSize: rawPageSize, ...filterFields } = flat;
+  const parsed = dokumenFilterSchema.safeParse(filterFields);
+  const base = parsed.success ? parsed.data : dokumenFilterSchema.parse({});
+  const pageParsed = paginationSchema.safeParse({ page: rawPage, pageSize: rawPageSize });
+  const filter = {
+    ...base,
+    page: pageParsed.success ? pageParsed.data.page : base.page,
+    pageSize: pageParsed.success ? pageParsed.data.pageSize : base.pageSize,
+  };
 
   const [list, folderSidebar] = await Promise.all([
     getDokumenList(user, filter),

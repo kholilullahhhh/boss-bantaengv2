@@ -3,9 +3,16 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import type { NavItem } from "@/components/layout/nav";
 
 interface SidebarContentProps {
@@ -19,7 +26,7 @@ export function SidebarContent({ items, onNavigate }: SidebarContentProps) {
   return (
     <div className="flex h-full flex-col gap-6">
       <div className="flex items-center gap-3 px-2">
-        <span className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-white shadow-sm">
+        <span className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-card shadow-sm">
           <Image
             src="/LogoBOSS.png"
             alt="Logo BOSS"
@@ -49,7 +56,7 @@ export function SidebarContent({ items, onNavigate }: SidebarContentProps) {
               onClick={onNavigate}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                 active
                   ? "bg-sidebar-accent text-sidebar-accent-foreground"
                   : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
@@ -74,45 +81,30 @@ interface SidebarProps {
 }
 
 export function Sidebar({ items }: SidebarProps) {
-  const [open, setOpen] = useState(false);
-
   return (
     <>
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r bg-sidebar p-4 text-sidebar-foreground lg:block">
         <SidebarContent items={items} />
       </aside>
 
-      {open && (
-        <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true">
-          <button
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button
             type="button"
-            className="absolute inset-0 bg-black/40"
-            aria-label="Tutup menu"
-            onClick={() => setOpen(false)}
-          />
-          <div className="absolute inset-y-0 left-0 w-72 max-w-[85vw] bg-sidebar p-4 shadow-xl">
-            <button
-              type="button"
-              className="mb-4 flex size-8 items-center justify-center rounded-md hover:bg-sidebar-accent"
-              aria-label="Tutup menu"
-              onClick={() => setOpen(false)}
-            >
-              <X className="size-4" aria-hidden="true" />
-            </button>
-            <div className="h-[calc(100%-3rem)]">
-              <SidebarContent items={items} onNavigate={() => setOpen(false)} />
-            </div>
-          </div>
-        </div>
-      )}
-
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="fixed bottom-4 left-4 z-20 flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-lg lg:hidden"
-      >
-        Buka Menu
-      </button>
+            aria-label="Buka menu navigasi"
+            className="fixed bottom-4 left-4 z-20 gap-2 rounded-full px-4 shadow-lg lg:hidden"
+          >
+            <Menu className="size-4" aria-hidden="true" />
+            Buka Menu
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-72 bg-sidebar p-4 text-sidebar-foreground sm:max-w-[85vw]">
+          <SheetHeader className="sr-only">
+            <SheetTitle>Menu navigasi</SheetTitle>
+          </SheetHeader>
+          <SidebarContent items={items} />
+        </SheetContent>
+      </Sheet>
     </>
   );
 }

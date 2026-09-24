@@ -95,16 +95,19 @@ export function AkunTable({ data, currentUserId }: { data: AkunTableRow[]; curre
     {
       accessorKey: "username",
       header: "Username",
+      meta: { className: "hidden sm:table-cell" },
       cell: ({ row }) => <span className="font-mono text-xs">{row.original.username}</span>,
     },
     {
       accessorKey: "role",
       header: "Role",
+      meta: { className: "hidden md:table-cell" },
       cell: ({ row }) => <Badge variant="secondary">{ROLE_LABELS[row.original.role]}</Badge>,
     },
     {
       accessorKey: "email",
       header: "Email",
+      meta: { className: "hidden lg:table-cell" },
       cell: ({ row }) => (
         <span className="text-muted-foreground">{row.original.email ?? "—"}</span>
       ),
@@ -112,6 +115,7 @@ export function AkunTable({ data, currentUserId }: { data: AkunTableRow[]; curre
     {
       accessorKey: "isActive",
       header: "Status",
+      meta: { className: "hidden sm:table-cell" },
       cell: ({ row }) =>
         row.original.isActive ? (
           <Badge>Aktif</Badge>

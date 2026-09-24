@@ -42,6 +42,15 @@ export function buildStorageKey(userId: string, originalName: string): string {
   return path.posix.join("dokumen", userId, `${stamp}-${randomUUID()}${ext}`);
 }
 
+/**
+ * Kunci storage harus di bawah prefix milik pemilik (anti-IDOR).
+ * Dipakai create/update dokumen agar path klien tidak menunjuk file user lain.
+ */
+export function isOwnedStorageKey(filePath: string, ownerId: string): boolean {
+  if (!filePath || filePath.includes("..") || !ownerId) return false;
+  return filePath.startsWith(`dokumen/${ownerId}/`);
+}
+
 function hmac(payload: string): string {
   return createHmac("sha256", signingSecret()).update(payload).digest("hex");
 }

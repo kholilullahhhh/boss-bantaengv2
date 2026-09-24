@@ -113,11 +113,13 @@ export function DokumenTable({
     {
       accessorKey: "userName",
       header: "Pemilik",
+      meta: { className: "hidden md:table-cell" },
       cell: ({ row }) => <span className="text-muted-foreground">{row.original.userName}</span>,
     },
     {
       accessorKey: "folderName",
       header: "Folder",
+      meta: { className: "hidden lg:table-cell" },
       cell: ({ row }) =>
         row.original.folderName ? (
           <Badge variant="secondary">{row.original.folderName}</Badge>
@@ -128,10 +130,12 @@ export function DokumenTable({
     {
       accessorKey: "tanggalDokumen",
       header: "Tanggal Dokumen",
+      meta: { className: "hidden sm:table-cell" },
     },
     {
       accessorKey: "fileSize",
       header: "Ukuran",
+      meta: { className: "hidden md:table-cell" },
       cell: ({ row }) => formatFileSize(row.original.fileSize),
     },
     {

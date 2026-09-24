@@ -2,11 +2,13 @@
 
 import { AuthError, CredentialsSignin } from "next-auth";
 import { hash } from "bcryptjs";
+import { Prisma } from "@prisma/client";
 import { signIn, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { loginSchema, registerSchema, formatZodErrors } from "@/lib/validations";
 import { getRequestContext } from "@/lib/request";
 import { logActivity } from "@/lib/activity";
+import { appBaseUrl } from "@/lib/app-url";
 import type { ActionResult } from "@/types/action";
 
 const GENERIC_CREDENTIALS_ERROR = "Username atau password salah.";
@@ -60,7 +62,7 @@ export async function loginAction(
       redirect: false,
     });
 
-    const url = new URL(redirectUrl, process.env.AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000");
+    const url = new URL(redirectUrl, appBaseUrl());
     const error = url.searchParams.get("error");
     if (error) {
       return { success: false, message: messageForAuthCode(url.searchParams.get("code")) };
@@ -133,6 +135,14 @@ export async function registerAction(input: unknown): Promise<ActionResult<{ use
 
     return { success: true, message: "Registrasi berhasil. Silakan masuk.", data: { username } };
   } catch (error) {
+    // Race: dua request daftar username sama → P2002, bukan 500.
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      const target = (error.meta?.target as string[] | undefined) ?? [];
+      const fieldErrors: Record<string, string[]> = {};
+      if (target.includes("username")) fieldErrors.username = ["Username sudah digunakan"];
+      if (target.includes("email")) fieldErrors.email = ["Email sudah digunakan"];
+      return { success: false, message: "Registrasi gagal.", fieldErrors };
+    }
     console.error("[auth] Registrasi gagal:", error instanceof Error ? error.message : error);
     return { success: false, message: "Registrasi gagal. Silakan coba lagi." };
   }

@@ -60,7 +60,9 @@ export const fileMetadataSchema = z.object({
     .trim()
     .min(1, "Path berkas tidak valid")
     .max(300, "Path berkas terlalu panjang")
-    .regex(/^[A-Za-z0-9][A-Za-z0-9._/-]*$/, "Path berkas tidak valid"),
+    .regex(/^[A-Za-z0-9][A-Za-z0-9._/-]*$/, "Path berkas tidak valid")
+    // Tolak traversal path (S1): `..` tidak boleh muncul di path yang disimpan klien.
+    .refine((value) => !value.split("/").includes(".."), "Path berkas tidak valid"),
   fileSize: z
     .number()
     .int("Ukuran berkas tidak valid")

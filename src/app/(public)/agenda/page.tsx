@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   description: "Agenda kegiatan Kantor Imigrasi Kelas III Non TPI Bantaeng.",
 };
 
+export const revalidate = 60;
+
 export default async function AgendaPage() {
   const agendas = await getPublishedAgendas();
 

@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/empty-state";
+import { CHART_GRID, CHART_TOOLTIP } from "@/lib/chart-colors";
 import { Inbox } from "lucide-react";
 
 interface TrendChartProps {
@@ -28,7 +29,7 @@ export function TrendChart({ data }: TrendChartProps) {
         <CardTitle>Tren Upload Dokumen</CardTitle>
         <CardDescription>Jumlah dokumen yang diunggah per bulan</CardDescription>
       </CardHeader>
-      <CardContent className="h-64">
+      <CardContent className="h-64 min-w-0">
         {!hasData ? (
           <EmptyState
             icon={Inbox}
@@ -39,13 +40,13 @@ export function TrendChart({ data }: TrendChartProps) {
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+              <CartesianGrid strokeDasharray="3 3" stroke={`hsl(${CHART_GRID})`} />
               <XAxis dataKey="label" tick={{ fontSize: 12 }} />
               <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
               <Tooltip
                 cursor={{ stroke: "hsl(var(--muted-foreground) / 0.3)" }}
-                contentStyle={{ borderRadius: 12, fontSize: 13 }}
-                labelStyle={{ fontWeight: 600 }}
+                contentStyle={{ ...CHART_TOOLTIP.contentStyle }}
+                labelStyle={{ ...CHART_TOOLTIP.labelStyle }}
               />
               <Line
                 type="monotone"
@@ -77,7 +78,7 @@ export function TopUsersChart({ data }: TopUsersChartProps) {
         <CardTitle>Top 5 Pengguna</CardTitle>
         <CardDescription>Pengguna dengan dokumen terbanyak</CardDescription>
       </CardHeader>
-      <CardContent className="h-64">
+      <CardContent className="h-64 min-w-0">
         {!hasData ? (
           <EmptyState
             icon={Inbox}
@@ -88,13 +89,13 @@ export function TopUsersChart({ data }: TopUsersChartProps) {
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+              <CartesianGrid strokeDasharray="3 3" stroke={`hsl(${CHART_GRID})`} />
               <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} />
               <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
               <Tooltip
                 cursor={{ fill: "hsl(var(--muted))" }}
-                contentStyle={{ borderRadius: 12, fontSize: 13 }}
-                labelStyle={{ fontWeight: 600 }}
+                contentStyle={{ ...CHART_TOOLTIP.contentStyle }}
+                labelStyle={{ ...CHART_TOOLTIP.labelStyle }}
               />
               <Bar dataKey="count" name="Dokumen" fill="var(--chart-2)" radius={[6, 6, 0, 0]} />
             </BarChart>

@@ -63,6 +63,7 @@ export function ActivityTable({ data }: { data: ActivityTableRow[] }) {
     {
       accessorKey: "action",
       header: "Aksi",
+      meta: { className: "hidden sm:table-cell" },
       cell: ({ row }) => (
         <Badge variant={ACTION_VARIANT[row.original.action] ?? "secondary"}>
           {ACTION_LABEL[row.original.action] ?? row.original.action}
@@ -72,6 +73,7 @@ export function ActivityTable({ data }: { data: ActivityTableRow[] }) {
     {
       accessorKey: "entity",
       header: "Entitas",
+      meta: { className: "hidden md:table-cell" },
       cell: ({ row }) => (
         <div className="min-w-0">
           <p className="text-sm">{row.original.entity}</p>
@@ -86,6 +88,7 @@ export function ActivityTable({ data }: { data: ActivityTableRow[] }) {
     {
       accessorKey: "ipAddress",
       header: "IP",
+      meta: { className: "hidden lg:table-cell" },
       cell: ({ row }) => (
         <span className="font-mono text-xs text-muted-foreground">
           {row.original.ipAddress ?? "—"}

@@ -214,10 +214,10 @@ Enforcement dilakukan di **middleware** (route) dan di **setiap Server Action** 
 ## Testing
 
 ```bash
-# Unit (Zod schemas + permissions.ts)
+# Unit (Zod schemas + permissions.ts + storage ownership)
 npm run test
 
-# Smoke (3 skenario)
+# Smoke + responsive + theme + security + flows
 npm run test:e2e
 ```
 
@@ -227,7 +227,94 @@ Smoke tests:
 2. Upload dokumen → dokumen muncul di list
 3. Role USER akses `/dashboard/akun` → redirect ke `/dashboard`
 
+Responsive / theme e2e (`responsive.spec.ts`, `theme.spec.ts`):
+
+- Viewport 320 / 768 / 1440 — halaman publik tanpa horizontal scroll
+- Hamburger nav publik + Sheet sidebar dashboard (mobile)
+- Cycle tema light/dark/system + persist setelah reload
+
+Security e2e (`security.spec.ts`):
+
+- Unauth `/dashboard` & `/dashboard/akun` → `/login`
+- Register username duplikat → error field (bukan 500)
+- USER tidak bisa buka `/dashboard/{akun,activity,jenis-usaha,dokumen}`
+- Admin tetap bisa `/dashboard/akun`
+- `/dashboard/dokumen?page=-1` tidak 500 (filter tidak di-reset)
+
+Flows e2e (`flows.spec.ts`):
+
+- Public beranda → agenda → detail → kontak
+- Admin jenis-usaha list/create + profil
+- `GET /api/health` → `{ ok: true }`
+
 > Untuk e2e, pastikan DB sudah migrate + seed, dan dev server bisa start (Playwright mengelola webServer-nya).
+
+## Dark Mode & Responsive
+
+### Dark mode
+
+- `next-themes` di root layout (`ThemeProvider`), `attribute="class"`, default **system**.
+- Toggle: cycle **light → dark → system** (`ThemeToggle`, `aria-label="Ganti tema"`).
+- Mounted di: public header, dashboard header, auth layout (kanan atas).
+- Design tokens di `src/app/globals.css` (`.dark` block): brand-indigo primary, `--chart-1..5`, `--chart-grid`, sidebar tokens.
+- Shadow gelap di-override di `.dark` (alpha lebih tinggi).
+- Charts memakai `src/lib/chart-colors.ts` + `var(--chart-*)`.
+- Exception (tetap gelap/putih regardless theme): hero landing overlays, logo circles, header navy `#07172D`, glass buttons di header publik.
+
+### Responsive breakpoints (keputusan)
+
+| Range | Layout |
+| --- | --- |
+| 320–639 (`sm` ke bawah) | Navbar publik = hamburger drawer; dashboard = floating **Buka Menu** → Sheet; tabel = scroll-x + kolom tersembunyi |
+| 640–1023 (`sm`–`lg`) | Nav publik penuh; dashboard sidebar masih drawer; filter 1–2 kolom |
+| 1024+ (`lg`+) | Dashboard sidebar fixed `lg:pl-64`; grid 2–4 kolom |
+
+Kolom tabel disembunyikan via `meta.className` (`hidden md:table-cell` dll.) — hanya dipakai di client columns.
+
+### QA checklist
+
+- [ ] 320 / 768 / 1440: `/`, `/agenda`, `/kontak`, `/login` tanpa horizontal scroll
+- [ ] 375: hamburger nav publik buka drawer Agenda/Kontak/Beranda
+- [ ] 375: login → **Buka Menu** → Sheet sidebar navigasi
+- [ ] Toggle tema: light → dark → system; persist reload
+- [ ] Dashboard charts grid/axis terbaca di dark
+- [ ] Tabel Dokumen/Akun/Activity: scroll-x di mobile, kolom utama tetap terlihat
+- [ ] Tap target icon ≥ 44px (ThemeToggle, hamburger)
+- [ ] `npm run lint` → `typecheck` → `test` → `build` hijau
+
+## Performance & Bug Audit
+
+Ringkasan audit 2026-09-24 (detail di `docs/`):
+
+| Dokumen | Isi |
+| --- | --- |
+| `docs/bug-audit-2026-09-24.md` | Tabel temuan B001–B006 (severity, repro, fix, test) |
+| `docs/perf-baseline-2026-09-24.md` | Baseline query/bundle/ISR + cara re-capture |
+| `docs/perf-report-2026-09-24.md` | Before/after, optimasi, target |
+
+### Fix utama (wajib paham saat maintain)
+
+- **S1 stale session (B001):** `getSessionUser` selalu baca `role`/`isActive` dari DB — JWT hanya untuk id sesi. Middleware tetap gate pertama; action/page tetap `requireActionAuth` / `requireRouteAccess`.
+- **S1 IDOR file path (B002/B005):** create/update dokumen wajib `isOwnedStorageKey(filePath, pemilik)` (`dokumen/{userId}/…`), tolak `..`, tolak path yang sudah dipakai dokumen lain.
+- **S3 filter pagination (B003):** `/dashboard/dokumen` parse filter tanpa `page`/`pageSize`, clamp paging terpisah — `?page=-1` tidak mereset filter.
+- **S3 register race (B004):** Prisma `P2002` → field error "sudah digunakan", bukan 500.
+- **B006 (product):** hapus folder masih hard-delete isi — sesuai dialog konfirmasi; **jangan ubah schema `SetNull` tanpa keputusan produk**.
+
+### Perf notes
+
+- Dashboard: agregasi paralel + `groupBy` + 1 raw SQL bulanan (tanpa loop 12 query).
+- List: `count`+`findMany` `Promise.all`, `take`/`skip`, `select` sempit.
+- Publik: ISR `revalidate` 60s (beranda/agenda), 300s (kontak).
+- Charts di-Suspense agar shell list tidak menunggu chart.
+- Dev: set Prisma `log` ke `query` sesaat untuk audit N+1 (default `warn`/`error`). Prod: `error` saja.
+- `GET /api/health` untuk probe/load test (tanpa data sensitif).
+
+### E2E coverage
+
+- `tests/e2e/security.spec.ts` — unauth redirect, USER vs admin routes, dup register, `?page=-1`.
+- `tests/e2e/flows.spec.ts` — public beranda/agenda/kontak, jenis-usaha, profil, health.
+
+Schema/index tambahan (jika dibutuhkan volume besar): **STOP + approve** sebelum `prisma migrate`.
 
 ## Troubleshooting
 

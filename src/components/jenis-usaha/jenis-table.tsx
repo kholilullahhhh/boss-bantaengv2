@@ -49,6 +49,7 @@ export function JenisUsahaTable({ data }: { data: JenisUsahaTableRow[] }) {
     {
       accessorKey: "deskripsi",
       header: "Deskripsi",
+      meta: { className: "hidden md:table-cell" },
       cell: ({ row }) => (
         <span className="block max-w-md truncate text-muted-foreground">
           {row.original.deskripsi ?? "—"}
@@ -58,6 +59,7 @@ export function JenisUsahaTable({ data }: { data: JenisUsahaTableRow[] }) {
     {
       accessorKey: "createdAt",
       header: "Dibuat",
+      meta: { className: "hidden sm:table-cell" },
       cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString("id-ID"),
     },
     {

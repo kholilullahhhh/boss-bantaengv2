@@ -5,13 +5,13 @@ import {
   isAllowedMimeType,
   FILE_MAX_SIZE,
 } from "@/lib/validations";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { canManageDocument, DOCUMENT_ROLES, hasRole } from "@/lib/permissions";
 import { buildStorageKey, putFile, readLocalFile, verifyFileSignature } from "@/lib/storage";
 import { rateLimit } from "@/lib/rate-limit";
 import { logActivity } from "@/lib/activity";
 import { getRequestContext } from "@/lib/request";
+import { getSessionUser } from "@/server/queries/session";
 
 export const runtime = "nodejs";
 
@@ -24,9 +24,8 @@ function failure(status: number, message: string): NextResponse {
 
 /** Unggah berkas dokumen (PDF/DOC/DOCX/XLS/XLSX, maks 10MB) — wajib login + role dokumen. */
 export async function POST(request: Request): Promise<NextResponse> {
-  const session = await auth();
-  const user = session?.user;
-  if (!user?.id || !user.isActive) {
+  const user = await getSessionUser();
+  if (!user) {
     return failure(401, "Silakan masuk terlebih dahulu.");
   }
   if (!hasRole(user.role, DOCUMENT_ROLES)) {
@@ -101,9 +100,8 @@ export async function GET(request: Request): Promise<NextResponse> {
     return failure(403, "Tautan berkas tidak valid atau kedaluwarsa.");
   }
 
-  const session = await auth();
-  const user = session?.user;
-  if (!user?.id || !user.isActive) {
+  const sessionUser = await getSessionUser();
+  if (!sessionUser) {
     return failure(401, "Silakan masuk terlebih dahulu.");
   }
 
@@ -111,7 +109,10 @@ export async function GET(request: Request): Promise<NextResponse> {
     where: { filePath },
     select: { id: true, userId: true, judul: true, mimeType: true },
   });
-  if (!dokumen || !canManageDocument({ id: user.id, role: user.role }, { userId: dokumen.userId })) {
+  if (
+    !dokumen ||
+    !canManageDocument({ id: sessionUser.id, role: sessionUser.role }, { userId: dokumen.userId })
+  ) {
     return failure(403, "Anda tidak memiliki akses ke berkas ini.");
   }
 

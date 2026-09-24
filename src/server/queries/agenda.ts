@@ -32,15 +32,25 @@ function mapAgenda(row: {
 
 /** Hanya agenda berstatus PUBLISH yang tampil ke publik. */
 export async function getPublishedAgendas(limit = 50): Promise<AgendaRow[]> {
-  const rows = await prisma.agenda.findMany({
-    where: { status: "PUBLISH" },
-    orderBy: [{ tglKegiatan: "desc" }, { jamMulai: "asc" }],
-    take: limit,
-  });
-  return rows.map(mapAgenda);
+  try {
+    const rows = await prisma.agenda.findMany({
+      where: { status: "PUBLISH" },
+      orderBy: [{ tglKegiatan: "desc" }, { jamMulai: "asc" }],
+      take: limit,
+    });
+    return rows.map(mapAgenda);
+  } catch (error) {
+    console.error("[agenda] List gagal diambil:", error instanceof Error ? error.message : error);
+    return [];
+  }
 }
 
 export async function getPublishedAgenda(id: string): Promise<AgendaRow | null> {
-  const row = await prisma.agenda.findFirst({ where: { id, status: "PUBLISH" } });
-  return row ? mapAgenda(row) : null;
+  try {
+    const row = await prisma.agenda.findFirst({ where: { id, status: "PUBLISH" } });
+    return row ? mapAgenda(row) : null;
+  } catch (error) {
+    console.error("[agenda] Detail gagal diambil:", error instanceof Error ? error.message : error);
+    return null;
+  }
 }

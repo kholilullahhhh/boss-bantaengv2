@@ -11,7 +11,7 @@ import {
 import { requireActionAuth } from "@/server/queries/session";
 import { logActivity } from "@/lib/activity";
 import { getRequestContext } from "@/lib/request";
-import { deleteFile } from "@/lib/storage";
+import { deleteFile, isOwnedStorageKey } from "@/lib/storage";
 import type { ActionResult } from "@/types/action";
 
 function revalidateDokumen(): void {
@@ -42,6 +42,25 @@ export async function createDokumenAction(input: unknown): Promise<ActionResult<
   const targetFolderId = folderId && folderId.length > 0 ? folderId : null;
 
   try {
+    if (!isOwnedStorageKey(file.filePath, user.id)) {
+      return {
+        success: false,
+        message: "Berkas tidak valid.",
+        fieldErrors: { file: ["Path berkas tidak sesuai dengan akun Anda"] },
+      };
+    }
+    const stolen = await prisma.dokumen.findFirst({
+      where: { filePath: file.filePath },
+      select: { id: true },
+    });
+    if (stolen) {
+      return {
+        success: false,
+        message: "Berkas sudah terdaftar pada dokumen lain.",
+        fieldErrors: { file: ["Berkas sudah digunakan"] },
+      };
+    }
+
     if (targetFolderId) {
       const folder = await prisma.folder.findUnique({ where: { id: targetFolderId } });
       if (!folder || folder.userId !== user.id) {
@@ -117,6 +136,27 @@ export async function updateDokumenAction(
 
     const { judul, deskripsi, folderId, tanggalDokumen, file } = parsed.data;
     const targetFolderId = folderId && folderId.length > 0 ? folderId : null;
+
+    if (file) {
+      if (!isOwnedStorageKey(file.filePath, existing.userId)) {
+        return {
+          success: false,
+          message: "Berkas tidak valid.",
+          fieldErrors: { file: ["Path berkas tidak sesuai dengan pemilik dokumen"] },
+        };
+      }
+      const claimed = await prisma.dokumen.findFirst({
+        where: { filePath: file.filePath, id: { not: id } },
+        select: { id: true },
+      });
+      if (claimed) {
+        return {
+          success: false,
+          message: "Berkas sudah terdaftar pada dokumen lain.",
+          fieldErrors: { file: ["Berkas sudah digunakan"] },
+        };
+      }
+    }
 
     if (targetFolderId) {
       const folder = await prisma.folder.findUnique({ where: { id: targetFolderId } });

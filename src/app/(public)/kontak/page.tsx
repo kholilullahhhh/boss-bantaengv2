@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Hubungi Kantor Imigrasi Kelas III Non TPI Bantaeng.",
 };
 
+export const revalidate = 300;
+
 const MAP_QUERY = encodeURIComponent(
   "Kantor Imigrasi Kelas III Non TPI Bantaeng, Sulawesi Selatan"
 );

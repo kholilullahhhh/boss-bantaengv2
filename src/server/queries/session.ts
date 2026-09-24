@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import type { Role } from "@prisma/client";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { appBaseUrl } from "@/lib/app-url";
 import {
   AuthorizationError,
   canAccess,
@@ -21,18 +23,39 @@ export interface SessionUser {
   isActive: boolean;
 }
 
+/**
+ * Selalu baca klaim role/isActive dari DB (bukan cache JWT).
+ * JWT diset saat login — role/isActive yang berubah setelah login
+ * harus langsung berlaku di request berikutnya (S1).
+ */
 export async function getSessionUser(): Promise<SessionUser | null> {
   const session = await auth();
-  const user = session?.user;
-  if (!user?.id || !user.isActive) return null;
+  const id = session?.user?.id;
+  if (!id) return null;
+
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      role: true,
+      email: true,
+      jabatan: true,
+      avatarUrl: true,
+      isActive: true,
+    },
+  });
+  if (!user || !user.isActive) return null;
+
   return {
     id: user.id,
-    name: user.name ?? "",
+    name: user.name,
     username: user.username,
     role: user.role,
-    email: user.email ?? null,
-    jabatan: user.jabatan ?? null,
-    avatarUrl: user.avatarUrl ?? null,
+    email: user.email,
+    jabatan: user.jabatan,
+    avatarUrl: user.avatarUrl,
     isActive: user.isActive,
   };
 }
@@ -40,8 +63,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
 export async function requireSession(): Promise<SessionUser> {
   const user = await getSessionUser();
   if (!user) {
-    const base = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-    const url = new URL("/login", base);
+    const url = new URL("/login", appBaseUrl());
     url.searchParams.set("callbackUrl", "/dashboard");
     redirect(url.toString());
   }

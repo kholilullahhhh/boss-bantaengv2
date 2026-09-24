@@ -34,6 +34,9 @@ export const metadata: Metadata = {
     "BOSS — Bantaeng Office Smart System. Sistem informasi digital Kantor Imigrasi Kelas III Non TPI Bantaeng.",
 };
 
+// Landing publik non-personalisasi: revalidate ringan agar TTFB hangat < target.
+export const revalidate = 60;
+
 const PROGRAMS = [
   {
     icon: FileStack,
@@ -258,7 +261,7 @@ export default async function LandingPage() {
             </div>
             <div className="absolute -bottom-5 -right-3 hidden rounded-xl border bg-card p-4 shadow-lg sm:block">
               <div className="flex items-center gap-3">
-                <span className="relative flex size-12 items-center justify-center overflow-hidden rounded-full bg-white p-1">
+                <span className="relative flex size-12 items-center justify-center overflow-hidden rounded-full bg-card p-1">
                   <Image
                     src="/logoimig.png"
                     alt="Logo Imigrasi"
@@ -459,58 +462,60 @@ export default async function LandingPage() {
       </section>
 
       {/* CTA kontak — background foto redup */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src="/rat.jpeg"
-            alt=""
-            fill
-            aria-hidden="true"
-            className="object-cover object-center"
-            sizes="100vw"
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/85 to-primary/70"
-          />
-        </div>
+<section className="relative overflow-hidden bg-[#0B1F3A]">
+  <div className="absolute inset-0">
+    <Image
+      src="/rat.jpeg"
+      alt=""
+      fill
+      aria-hidden="true"
+      className="object-cover object-center"
+      sizes="100vw"
+    />
 
-        <div className="relative mx-auto w-full max-w-6xl px-4 py-16 lg:px-6 lg:py-20">
-          <div className="max-w-2xl space-y-5 text-primary-foreground">
-            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              Butuh bantuan layanan?
-            </h2>
-            <p className="text-sm leading-relaxed text-primary-foreground/90 sm:text-base">
-              Hubungi kami untuk informasi layanan Kantor Imigrasi Kelas III Non TPI
-              Bantaeng — kami siap membantu pegawai dan masyarakat.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Button
-                asChild
-                variant="secondary"
-                size="lg"
-                className="bg-white text-primary hover:bg-white/90"
-              >
-                <Link href="/kontak">
-                  <Mail aria-hidden="true" />
-                  Hubungi Kami
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white"
-              >
-                <a href="tel:+62411222000">
-                  <Phone aria-hidden="true" />
-                  Telepon Kantor
-                </a>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+    <div
+      aria-hidden="true"
+      className="absolute inset-0 bg-gradient-to-r from-[#07172D]/95 via-[#0B1F3A]/90 to-[#0B1F3A]/75"
+    />
+  </div>
+
+  <div className="relative mx-auto w-full max-w-6xl px-4 py-16 lg:px-6 lg:py-20">
+    <div className="max-w-2xl space-y-5 text-white">
+      <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+        Butuh bantuan layanan?
+      </h2>
+
+      <p className="text-sm leading-relaxed text-white/90 sm:text-base">
+        Hubungi kami untuk informasi layanan Kantor Imigrasi Kelas III Non TPI
+        Bantaeng — kami siap membantu pegawai dan masyarakat.
+      </p>
+
+      <div className="flex flex-wrap gap-3">
+        <Button
+          asChild
+          size="lg"
+          className="border-0 bg-white text-[#0B1F3A] hover:bg-white/90"
+        >
+          <Link href="/kontak">
+            <Mail aria-hidden="true" />
+            Hubungi Kami
+          </Link>
+        </Button>
+
+        <Button
+          asChild
+          size="lg"
+          className="border border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+        >
+          <a href="tel:+62411222000">
+            <Phone aria-hidden="true" />
+            Telepon Kantor
+          </a>
+        </Button>
+      </div>
+    </div>
+  </div>
+</section>
     </div>
   );
 }

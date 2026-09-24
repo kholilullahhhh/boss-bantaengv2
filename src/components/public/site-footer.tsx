@@ -7,7 +7,7 @@ export function SiteFooter() {
       <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4 lg:px-6">
         <div className="space-y-3 lg:col-span-2">
           <div className="flex items-center gap-3">
-            <span className="relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-white shadow-sm">
+            <span className="relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-card shadow-sm">
               <Image
                 src="/LogoBOSS.png"
                 alt="Logo BOSS"
@@ -28,7 +28,7 @@ export function SiteFooter() {
             pengelolaan dokumen, agenda, dan layanan internal yang cepat dan aman.
           </p>
           <div className="flex items-center gap-3">
-            <span className="relative flex size-10 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-white p-1">
+            <span className="relative flex size-10 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-card p-1">
               <Image
                 src="/rapp.png"
                 alt="Logo Imigrasi"
@@ -37,7 +37,7 @@ export function SiteFooter() {
                 className="size-8 object-contain"
               />
             </span>
-            <span className="relative flex size-10 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-white p-1">
+            <span className="relative flex size-10 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-card p-1">
               <Image
                 src="/logoimig.png"
                 alt="Kementerian Imigrasi dan Pemasyarakatan RI"

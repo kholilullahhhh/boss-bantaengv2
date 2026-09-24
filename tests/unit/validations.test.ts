@@ -7,9 +7,12 @@ import {
   profileSchema,
   agendaSchema,
   createDokumenSchema,
+  fileMetadataSchema,
   dokumenFilterSchema,
+  paginationSchema,
   changePasswordSchema,
 } from "@/lib/validations";
+import { isOwnedStorageKey } from "@/lib/storage";
 
 describe("authSchema", () => {
   it("menerima kredensial valid", () => {
@@ -223,5 +226,73 @@ describe("changePasswordSchema", () => {
       confirmPassword: "new-password",
     });
     expect(result.success).toBe(true);
+  });
+});
+
+describe("fileMetadataSchema (path traversal)", () => {
+  const base = {
+    fileUrl: "/api/upload?path=dokumen%2Fu1%2Fa.pdf",
+    filePath: "dokumen/u1/2026-09-24-abc.pdf",
+    fileSize: 1024,
+    mimeType: "application/pdf",
+    originalName: "laporan.pdf",
+  };
+
+  it("menerima path storage yang valid", () => {
+    expect(fileMetadataSchema.safeParse(base).success).toBe(true);
+  });
+
+  it("menolak path traversal ..", () => {
+    expect(
+      fileMetadataSchema.safeParse({ ...base, filePath: "dokumen/u1/../admin/secret.pdf" })
+        .success
+    ).toBe(false);
+    expect(fileMetadataSchema.safeParse({ ...base, filePath: "../secrets.pdf" }).success).toBe(
+      false
+    );
+  });
+
+  it("menolak createDokumen dengan filePath traversal", () => {
+    const result = createDokumenSchema.safeParse({
+      judul: "Laporan",
+      deskripsi: "",
+      folderId: "",
+      tanggalDokumen: "2026-09-24",
+      file: { ...base, filePath: "dokumen/u1/../victim/file.pdf" },
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("isOwnedStorageKey", () => {
+  it("menerima path di bawah prefix pemilik", () => {
+    expect(isOwnedStorageKey("dokumen/user-a/2026-01-01-x.pdf", "user-a")).toBe(true);
+  });
+
+  it("menolak path pemilik lain", () => {
+    expect(isOwnedStorageKey("dokumen/user-b/2026-01-01-x.pdf", "user-a")).toBe(false);
+  });
+
+  it("menolak traversal dan ownerId kosong", () => {
+    expect(isOwnedStorageKey("dokumen/user-a/../user-b/x.pdf", "user-a")).toBe(false);
+    expect(isOwnedStorageKey("dokumen/user-a/x.pdf", "")).toBe(false);
+    expect(isOwnedStorageKey("", "user-a")).toBe(false);
+  });
+});
+
+describe("paginationSchema", () => {
+  it("menolak page negatif/non-integer", () => {
+    expect(paginationSchema.safeParse({ page: "-1" }).success).toBe(false);
+    expect(paginationSchema.safeParse({ page: "abc" }).success).toBe(false);
+    expect(paginationSchema.safeParse({ page: "1" }).success).toBe(true);
+  });
+
+  it("default page=1 pageSize=10 saat kosong", () => {
+    const result = paginationSchema.safeParse({});
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.page).toBe(1);
+      expect(result.data.pageSize).toBe(10);
+    }
   });
 });

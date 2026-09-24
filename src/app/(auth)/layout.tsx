@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function AuthLayout({
   children,
@@ -10,8 +11,11 @@ export default function AuthLayout({
       {/* Background */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(0.95_0.02_240),transparent_55%)]"
+        className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(0.95_0.02_240),transparent_55%)] dark:bg-[radial-gradient(ellipse_at_top,oklch(0.25_0.02_260),transparent_55%)]"
       />
+      <div className="absolute right-4 top-4 z-10">
+        <ThemeToggle />
+      </div>
 
       <div className="relative w-full max-w-md space-y-6">
         {/* Header */}
@@ -24,7 +28,7 @@ export default function AuthLayout({
                 relative flex size-16 items-center justify-center
                 overflow-hidden rounded-full
                 border border-border/60
-                bg-white
+                bg-card
                 shadow-md
                 transition-all duration-300
                 hover:shadow-lg
@@ -46,7 +50,7 @@ export default function AuthLayout({
                 relative flex size-16 items-center justify-center
                 overflow-hidden rounded-full
                 border border-border/60
-                bg-white
+                bg-card
                 shadow-md
                 transition-all duration-300
                 hover:shadow-lg
@@ -65,7 +69,7 @@ export default function AuthLayout({
 
           {/* Brand */}
           <div className="space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight text-[#07172D]">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
               BOSS
             </h1>
 

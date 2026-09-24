@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { FileText, Files, UserPlus, Users } from "lucide-react";
 import { requireSession } from "@/server/queries/session";
@@ -10,6 +11,7 @@ import { TopUsersChart, TrendChart } from "@/components/dashboard/charts";
 import { YearFilter } from "@/components/dashboard/year-filter";
 import { RecentDokumenTable } from "@/components/dashboard/recent-dokumen-table";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -69,8 +71,12 @@ export default async function DashboardPage({
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <TrendChart data={data.trend} />
-        <TopUsersChart data={data.topUsers} />
+        <Suspense fallback={<Skeleton className="h-72 rounded-xl border" />}>
+          <TrendChart data={data.trend} />
+        </Suspense>
+        <Suspense fallback={<Skeleton className="h-72 rounded-xl border" />}>
+          <TopUsersChart data={data.topUsers} />
+        </Suspense>
       </div>
 
       <section className="space-y-3">
