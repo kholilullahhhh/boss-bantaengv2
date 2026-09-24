@@ -1,4 +1,6 @@
+import { mkdir, writeFile } from "node:fs/promises";
 import { readFileSync } from "node:fs";
+import { randomUUID } from "node:crypto";
 import path from "node:path";
 import { hash } from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
@@ -156,6 +158,131 @@ const AGENDAS: SeedAgenda[] = [
   },
 ];
 
+const FOLDER_NAMES = [
+  "Arsip 2026",
+  "Surat Masuk",
+  "Surat Keluar",
+  "Laporan",
+  "Berita Acara",
+  "SK & Keputusan",
+  "Dokumen Pendukung",
+  "Arsip Digital",
+];
+
+const DUMMY_DOC_TITLES = [
+  "Laporan Kegiatan Triwulan I",
+  "Surat Keputusan Kepala Kantor",
+  "Notulensi Rapat Koordinasi",
+  "Berita Acara Serah Terima",
+  "Daftar Hadir Apel Pagi",
+  "Permohonan Izin Kegiatan",
+  "Persetujuan Dokumen Perjalanan Dinas",
+  "Surat Tugas Pegawai",
+  "Laporan Pengelolaan Arsip",
+  "Keterangan Riwayat Pekerjaan",
+];
+
+const MINI_PDF = Buffer.from(
+  "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n" +
+    "2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n" +
+    "3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 200 200]>>endobj\n" +
+    "trailer<</Root 1 0 R>>\n%%EOF",
+  "utf-8"
+);
+
+function storageRoot(): string {
+  return path.join(process.cwd(), ".storage");
+}
+
+async function ensureDummyPdf(userId: string, fileName: string): Promise<{
+  filePath: string;
+  fileUrl: string;
+  fileSize: number;
+}> {
+  const stamp = new Date().toISOString().slice(0, 10);
+  const filePath = path.posix.join("dokumen", userId, `${stamp}-${randomUUID()}.pdf`);
+  const absolute = path.join(storageRoot(), filePath);
+  await mkdir(path.dirname(absolute), { recursive: true });
+  await writeFile(absolute, MINI_PDF);
+  return {
+    filePath,
+    fileUrl: `/api/upload?path=${encodeURIComponent(filePath)}`,
+    fileSize: MINI_PDF.byteLength,
+  };
+}
+
+async function seedFoldersAndDocs(
+  prisma: PrismaClient,
+  userId: string,
+  username: string
+): Promise<{ folders: number; docs: number }> {
+  const folderIds: string[] = [];
+  const existingFolders = await prisma.folder.count({ where: { userId } });
+
+  if (existingFolders === 0) {
+    // 5–7 folder per akun (deterministik dari panjang username)
+    const folderCount = 5 + (username.length % 3);
+    for (let i = 0; i < folderCount; i += 1) {
+      const name = FOLDER_NAMES[i % FOLDER_NAMES.length];
+      const folder = await prisma.folder.create({
+        data: {
+          userId,
+          name,
+          color: (i % 8) + 1,
+        },
+        select: { id: true },
+      });
+      folderIds.push(folder.id);
+    }
+  } else {
+    const owned = await prisma.folder.findMany({
+      where: { userId },
+      select: { id: true },
+    });
+    folderIds.push(...owned.map((f) => f.id));
+  }
+
+  const existingDocs = await prisma.dokumen.count({ where: { userId } });
+  if (existingDocs > 0) {
+    return { folders: folderIds.length, docs: 0 };
+  }
+
+  // 6–10 dokumen per akun
+  const docCount = 6 + (username.length % 5);
+  let created = 0;
+  for (let i = 0; i < docCount; i += 1) {
+    const judul = `${DUMMY_DOC_TITLES[i % DUMMY_DOC_TITLES.length]} — ${username}`;
+    const uniqueJudul = i >= DUMMY_DOC_TITLES.length ? `${judul} (${i + 1})` : judul;
+    const file = await ensureDummyPdf(userId, `dummy-${i + 1}.pdf`);
+    const folderId = folderIds.length > 0 ? folderIds[i % folderIds.length] : null;
+    const dayOffset = (i * 3) % 28;
+    const tanggal = new Date(Date.UTC(2026, (i + 1) % 12, (dayOffset % 27) + 1));
+
+    const existing = await prisma.dokumen.findFirst({
+      where: { userId, judul: uniqueJudul },
+      select: { id: true },
+    });
+    if (existing) continue;
+
+    await prisma.dokumen.create({
+      data: {
+        userId,
+        folderId,
+        judul: uniqueJudul,
+        deskripsi: `Dokumen dummy untuk uji tampilan (${username}).`,
+        fileUrl: file.fileUrl,
+        filePath: file.filePath,
+        fileSize: file.fileSize,
+        mimeType: "application/pdf",
+        tanggalDokumen: tanggal,
+      },
+    });
+    created += 1;
+  }
+
+  return { folders: folderIds.length, docs: created };
+}
+
 async function main(): Promise<void> {
   const prisma = new PrismaClient();
   const seedPassword =
@@ -226,11 +353,27 @@ async function main(): Promise<void> {
       }
     }
 
+    let totalFolders = 0;
+    let totalDocs = 0;
+    console.log(`[seed] Menyiapkan folder + dokumen dummy per akun ...`);
+    for (const account of SEED_ACCOUNTS) {
+      const userId = accounts[account.username];
+      if (!userId) continue;
+      const result = await seedFoldersAndDocs(prisma, userId, account.username);
+      totalFolders += result.folders;
+      totalDocs += result.docs;
+      console.log(
+        `  - ${account.username}: +${result.folders} folder, +${result.docs} dokumen`
+      );
+    }
+
     const userCount = await prisma.user.count();
     const jenisCount = await prisma.jenisUsaha.count();
     const agendaCount = await prisma.agenda.count();
+    const folderCount = await prisma.folder.count();
+    const dokumenCount = await prisma.dokumen.count();
     console.log(
-      `[seed] Selesai. user=${userCount}, jenis_usaha=${jenisCount}, agenda=${agendaCount}`
+      `[seed] Selesai. user=${userCount}, jenis_usaha=${jenisCount}, agenda=${agendaCount}, folder=${folderCount} (baru ${totalFolders}), dokumen=${dokumenCount} (baru ${totalDocs})`
     );
   } finally {
     await prisma.$disconnect();
